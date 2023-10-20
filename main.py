@@ -5,6 +5,7 @@ from datasets import Dataset
 import numpy as np
 import random
 import torch
+import fire
 from datasets import load_dataset, load_metric
 from transformers import (
     Seq2SeqTrainer,
@@ -229,7 +230,7 @@ def main(
 
 
 if __name__ == '__main__':
-    main()
+    fire.Fire(main)
 
 
 
