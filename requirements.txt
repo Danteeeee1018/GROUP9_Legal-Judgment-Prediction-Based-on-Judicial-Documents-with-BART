@@ -1,0 +1,11 @@
+pandas
+datasets
+numpy
+random
+torch
+fire
+transformers
+statistics
+spicy
+accelerate
+scipy
