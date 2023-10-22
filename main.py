@@ -55,7 +55,9 @@ def main(
         return train_dataset, val_dataset, test_dataset
 
     train_df_original, val_df_original, test_df_original = load_data_from_file()
-
+    train_df_original = Dataset.from_dict(train_df_original)
+    val_df_original = Dataset.from_dict(val_df_original)
+    test_df_original = Dataset.from_dict(test_df_original)
     rouge = load_metric("rouge")
 
     tokenizer = BertTokenizer.from_pretrained("fnlp/bart-base-chinese")
@@ -107,6 +109,8 @@ def main(
 
         return  batch
 
+
+
     # map train data
     train_df = train_df_original.map(
         process_data_to_model_inputs,
@@ -122,9 +126,11 @@ def main(
         batch_size=batch_size,
         remove_columns=["source", "target"]
     )
-    test_df = test_df_original.set_format(
-        type="torch",
-        columns=["input_ids", "attention_mask", "labels"]
+    test_df = val_df_original.map(
+        process_data_to_model_inputs,
+        batched=True,
+        batch_size=batch_size,
+        remove_columns=["source", "target"]
     )
 
 
@@ -147,6 +153,7 @@ def main(
     training_args = Seq2SeqTrainingArguments(
         predict_with_generate=True,
         evaluation_strategy="epoch",
+        save_strategy="epoch",
         per_device_train_batch_size=batch_size,
         per_device_eval_batch_size=batch_size,
         learning_rate=learning_rate,
